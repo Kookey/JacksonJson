@@ -2,15 +2,21 @@ package com.steel.entity;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 
@@ -62,7 +68,7 @@ public class JacksonTest {
 	/**
 	 * Java对象转成json
 	 */
-	//@Test
+	// @Test
 	public void writeEntityJson() {
 		try {
 			System.out.println("jsonGenerator");
@@ -73,10 +79,11 @@ public class JacksonTest {
 		} catch (Exception e) {
 		}
 	}
+
 	/**
 	 * 将Map集合转成Json字符串
 	 */
-	//@Test
+	// @Test
 	public void writeMapJson() {
 		try {
 			Map<String, Object> map = new HashMap<String, Object>();
@@ -94,12 +101,12 @@ public class JacksonTest {
 		} catch (Exception e) {
 		}
 	}
-	
+
 	/**
 	 * 将List集合转成json
 	 */
-	@Test
-	public void writeListJSON(){
+	// @Test
+	public void writeListJSON() {
 		List<AccountBean> list = new ArrayList<AccountBean>();
 		list.add(bean);
 		bean = new AccountBean();
@@ -108,55 +115,150 @@ public class JacksonTest {
 		bean.setEmai("email2");
 		bean.setName("houdm");
 		list.add(bean);
-		
+
 		System.out.println("jsonGenerator");
 		try {
-			//list转成JSON字符串
+			// list转成JSON字符串
 			jsonGenerator.writeObject(list);
 			System.out.println();
 			System.out.println("objectMappper");
-			//用objectMapper直接返回list转成的JSON字符串
+			// 用objectMapper直接返回list转成的JSON字符串
 			System.out.println("1、" + objectMapper.writeValueAsString(list));
 			System.out.println("2、");
-			//objectMapper list转成JSON字符串
+			// objectMapper list转成JSON字符串
 			objectMapper.writeValue(System.out, list);
 		} catch (Exception e) {
 		}
 	}
-	
+
+	// @Test
 	public void writeOthersJSON() {
-		String[] arr = {"a" ,"b" ,"c"};
+		String[] arr = { "a", "b", "c" };
 		System.out.println("jsonGenerator");
 		String str = "hello world jackson";
 		try {
-			//byte
+			// byte
 			jsonGenerator.writeBinary(str.getBytes());
-			//boolean
+			// boolean
 			jsonGenerator.writeBoolean(true);
-			//null
+			// null
 			jsonGenerator.writeNull();
-			//float
+			// float
 			jsonGenerator.writeNumber(2.2f);
-			//char
+			// char
 			jsonGenerator.writeRaw("c");
-			//String
+			// String
 			jsonGenerator.writeRaw(str, 5, 10);
-			//String
+			// String
 			jsonGenerator.writeRawValue(str, 5, 5);
-			//String
+			// String
 			jsonGenerator.writeString(str);
-			
+
 			jsonGenerator.writeTree(JsonNodeFactory.instance.POJONode(str));
 			System.out.println();
-			
-			//Object
+
+			// Object
 			jsonGenerator.writeStartObject();
 			jsonGenerator.writeObjectFieldStart("user");
 			jsonGenerator.writeStringField("name", "jackson");
 			jsonGenerator.writeBooleanField("sex", true);
 			jsonGenerator.writeNumberField("age", 22);
+			jsonGenerator.writeEndObject();
+
+			jsonGenerator.writeArrayFieldStart("infos");
+			jsonGenerator.writeNumber(22);
+			jsonGenerator.writeString("this is array");
+			jsonGenerator.writeEndArray();
+			jsonGenerator.writeEndObject();
+
+			AccountBean bean = new AccountBean();
+			bean.setAddress("address");
+			bean.setEmai("email");
+			bean.setId(1);
+			// complex Object
+			jsonGenerator.writeStartObject();
+			jsonGenerator.writeObjectField("user", bean);
+			jsonGenerator.writeObjectField("infos", arr);
+			jsonGenerator.writeEndObject();
 		} catch (Exception e) {
-			
+
 		}
+	}
+
+	/**
+	 * JSON转成Java对象
+	 */
+	//@Test
+	public void readJson2Entity() {
+		String json = "{\"address\":\"address\",\"name\":\"wxlhdm\",\"id\":1,\"emai\":\"email\"}";
+		AccountBean acc;
+		try {
+			acc = objectMapper.readValue(json, AccountBean.class);
+			System.out.println(acc.getName());
+			System.out.println(acc);
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	/**
+	 * 将json字符串转成List<Map>集合
+	 */
+	//@Test
+	@SuppressWarnings("unchecked")
+	public void readJson2List(){
+		String json = "[{ \"address\":\"address2\",\"name\":\"jackson2\",\"id\":2,\"emai\":\"email\"},"+"{\"address\":\"address\",\"name\":\"jackson\",\"id\":1,\"emai\":\"email\"}]";
+		try {
+			List<LinkedHashMap<String,Object>> list = objectMapper.readValue(json, List.class);
+			System.out.println(list.size());
+			for(int i=0; i<list.size();i++){
+				Map<String,Object> map = list.get(i);
+				Set<String> set = map.keySet();
+				for(Iterator<String> it = set.iterator();it.hasNext();){
+					String key = it.next();
+					System.out.println(key+":"+map.get(key));
+				}
+			}
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Json字符串转成Array数组
+	 */
+	@Test
+	public void readJson2Array(){
+		String json = "[{ \"address\":\"address2\",\"name\":\"jackson2\",\"id\":2,\"emai\":\"email\"},"
+					  +"{\"address\":\"address\",\"name\":\"jackson\",\"id\":1,\"emai\":\"email\"}]";
+		try {
+			AccountBean[] arr = objectMapper.readValue(json, AccountBean[].class);
+			System.out.println("数组长度:"+arr.length);
+			for(int i=0;i<arr.length;i++){
+				System.out.println(arr[i]);
+			}
+			List<AccountBean> list = Arrays.asList(arr);
+			System.out.println(list.size());
+		} catch (JsonParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
