@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <package name="default" extends="json-default">
+         <action name="CategoryAction" class="com.steel.action.CategoryAction" method="getJsonString">
+             <result type="json">
+           		<param name="root">cateStr</param> 
+             </result>         
+         </action>
+          <action name="CateRootAction" class="com.steel.action.CateRootAction" method="getRoot">
+              <result type="json">
+            		<param name="root">rootStr</param>
+              </result> 
+         </action>  
+         <action name="MaterialAction" class="com.steel.action.MaterialAction" method="getMaterials">
+         		<result type="json">
+         			<param name="includeProperties">lists.*,rowCount</param>
+         		</result>
+         </action>
+    </package>
+</struts>

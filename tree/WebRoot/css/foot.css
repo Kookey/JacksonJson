@@ -1,0 +1,61 @@
+table.hovertable {
+	font-family: verdana, arial, sans-serif;
+	font-size: 11px;
+	color: #FF;
+	border-width: 1px;
+	border-color: #999999;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+table.hovertable th {
+	background-color: #c3dde0;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #CCC;
+}
+
+table.hovertable tr {
+	background-color: #d4e3e5;
+}
+
+table.hovertable td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #a9c6c9;
+}
+
+.page {
+	text-align: center;
+	height: 30px;
+	line-height: 30px;
+	clear: both;
+	padding-bottom: 20px;
+	padding-top: 10px;
+}
+
+.page a {
+	padding: 5px 8px;
+	border: 1px solid #afd8ff;
+	background: rgb(250, 244, 244);
+}
+
+a:visited {
+	color: #666;
+	text-decoration: none;
+}
+
+a:link {
+	color: #333333;
+	text-decoration: none;
+}
+
+a:visited {
+	text-decoration: none;
+}
+
+a:link {
+	text-decoration: none;
+}
