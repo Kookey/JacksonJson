@@ -1,6 +1,7 @@
 package com.steel.entity;
 
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,11 +15,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.fasterxml.jackson.core.JsonEncoding;
+import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 /**
  * 
@@ -223,13 +226,10 @@ public class JacksonTest {
 				}
 			}
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -237,7 +237,7 @@ public class JacksonTest {
 	/**
 	 * Json字符串转成Array数组
 	 */
-	@Test
+	//@Test
 	public void readJson2Array(){
 		String json = "[{ \"address\":\"address2\",\"name\":\"jackson2\",\"id\":2,\"emai\":\"email\"},"
 					  +"{\"address\":\"address\",\"name\":\"jackson\",\"id\":1,\"emai\":\"email\"}]";
@@ -250,15 +250,64 @@ public class JacksonTest {
 			List<AccountBean> list = Arrays.asList(arr);
 			System.out.println(list.size());
 		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+	}
+	
+	/**
+	 * json字符串转成Map
+	 */
+	//@Test
+	@SuppressWarnings("unchecked")
+	public void readJson2Map(){
+		String json = "{\"success\":true,\"A\":{\"address\":\"address2\",\"name\":\"haha2\",\"id\":2,\"emai\":\"email2\"},"+"\"B\":{\"address\":\"address\",\"name\":\"haha\",\"id\":1,\"emai\":\"email\"}}";
+		try {
+			Map<String,Map<String,Object>> maps = objectMapper.readValue(json, Map.class);
+			System.out.println(maps.size());
+			Set<String> key = maps.keySet();
+			Iterator<String> iter = key.iterator();
+			while(iter.hasNext()){
+				String field = iter.next();
+				System.out.println(field+":"+maps.get(field));
+			}
+		} catch (JsonParseException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//Jackson对XML的支持
+	@Test
+	public void writeObject2Xml(){
+		System.out.println("XmlMapper");
+		XmlMapper xml = new XmlMapper();
+		
+		StringWriter sw = new StringWriter();
+		try {
+			xml.writeValue(sw, bean);
+			System.out.println(sw.toString());
+			List<AccountBean> list = new ArrayList<AccountBean>();
+			list.add(bean);
+			list.add(bean);
+			System.out.println(xml.writeValueAsString(list));
+			Map<String,AccountBean> map = new HashMap<String,AccountBean>();
+			map.put("A", bean);
+			map.put("B", bean);
+			System.out.println(xml.writeValueAsString(map));
+		} catch (JsonGenerationException e) {
+			e.printStackTrace();
+		} catch (JsonMappingException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 }
